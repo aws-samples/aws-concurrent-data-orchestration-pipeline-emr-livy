@@ -8,8 +8,9 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Must be the name of an existing EC2 KeyPair
   S3BucketName:
-    Description: S3 Bucket Name to read and write the Movielens dataset. This will create a NEW bucket.
+    Description: A new S3 Bucket name. This bucket will be used to read and write the Movielens dataset.
     Type: String
+    AllowedPattern: '[a-zA-Z0-9]+'
   DBPassword:
     Default: airflowpassword
     NoEcho: 'true'
