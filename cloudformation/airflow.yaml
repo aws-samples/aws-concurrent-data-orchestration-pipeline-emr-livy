@@ -8,9 +8,9 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Must be the name of an existing EC2 KeyPair
   S3BucketName:
-    Description: A new S3 Bucket name. This bucket will be used to read and write the Movielens dataset.
+    Description: REQUIRED - A new S3 Bucket name. This bucket will be used to read and write the Movielens dataset.
     Type: String
-    AllowedPattern: '[a-zA-Z0-9]+'
+    AllowedPattern: '.+'
   DBPassword:
     Default: airflowpassword
     NoEcho: 'true'
@@ -88,7 +88,8 @@ Resources:
          # Install git
          sudo yum install -y git
          # Clone the git repository
-         git clone https://github.com/aws-samples/aws-concurrent-data-orchestration-pipeline-emr-livy.git
+         # git clone https://github.com/aws-samples/aws-concurrent-data-orchestration-pipeline-emr-livy.git
+         git clone https://github.com/binaljhaveri/aws-concurrent-data-orchestration-pipeline-emr-livy
          sudo pip install boto3
          # Install airflow using pip
          echo "Install Apache Airflow"
@@ -192,7 +193,7 @@ Resources:
         -
           Ref: EC2Role
   S3Bucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
     Properties:
       AccessControl: BucketOwnerFullControl
       BucketName: !Ref 'S3BucketName'
