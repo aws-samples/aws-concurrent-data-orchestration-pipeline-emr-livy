@@ -89,7 +89,7 @@ Resources:
          sudo yum install -y git
          # Clone the git repository
          # git clone https://github.com/aws-samples/aws-concurrent-data-orchestration-pipeline-emr-livy.git
-         git clone https://github.com/binaljhaveri/aws-concurrent-data-orchestration-pipeline-emr-livy
+         git clone https://github.com/binaljhaveri/aws-concurrent-data-orchestration-pipeline-emr-livy.git
          sudo pip install boto3
          # Install airflow using pip
          echo "Install Apache Airflow"
