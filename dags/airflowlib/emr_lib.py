@@ -5,7 +5,14 @@ def client(region_name='us-west-2'):
     global emr
     emr = boto3.client('emr', region_name=region_name)
 
+def get_security_group_id(group_name):
+    ec2 = boto3.client('ec2', region_name='us-west-2')
+    response = ec2.describe_security_groups(GroupNames=[group_name])
+    return response['SecurityGroups'][0]['GroupId']
+
 def create_cluster(cluster_name='Airflow-' + str(datetime.now()), release_label='emr-5.9.0',master_instance_type='m3.xlarge', num_core_nodes=2, core_node_instance_type='m3.2xlarge'):
+    emr_master_security_group_id = get_security_group_id('AirflowEMRMasterSG')
+    emr_slave_security_group_id = get_security_group_id('AirflowEMRSlaveSG')
     cluster_response = emr.run_job_flow(
         Name=cluster_name,
         ReleaseLabel=release_label,
@@ -16,20 +23,20 @@ def create_cluster(cluster_name='Airflow-' + str(datetime.now()), release_label=
                     'Market': 'ON_DEMAND',
                     'InstanceRole': 'MASTER',
                     'InstanceType': master_instance_type,
-                    'InstanceCount': 1,
-                    'EmrManagedMasterSecurityGroup': 'AirflowEMRMasterSG'
+                    'InstanceCount': 1
                 },
                 {
                     'Name': "Slave nodes",
                     'Market': 'ON_DEMAND',
                     'InstanceRole': 'CORE',
                     'InstanceType': core_node_instance_type,
-                    'InstanceCount': num_core_nodes,
-                    'EmrManagedSlaveSecurityGroup': 'AirflowEMRSlaveSG'
+                    'InstanceCount': num_core_nodes
                 }
             ],
             'KeepJobFlowAliveWhenNoSteps': True,
             'Ec2KeyName' : 'airflow_key_pair',
+            'EmrManagedMasterSecurityGroup': emr_master_security_group_id,
+            'EmrManagedSlaveSecurityGroup': emr_slave_security_group_id
         },
         VisibleToAllUsers=True,
         JobFlowRole='EMR_EC2_DefaultRole',

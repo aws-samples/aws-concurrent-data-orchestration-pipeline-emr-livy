@@ -219,3 +219,7 @@ Resources:
     Properties:
       AccessControl: BucketOwnerFullControl
       BucketName: !Ref 'S3BucketName'
+Outputs:
+  AirflowEC2PublicDNSName:
+    Description: Public DNS Name of the Airflow EC2 instance
+    Value: !GetAtt EC2Instance.PublicDnsName
