@@ -9,9 +9,6 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2017, 11, 01),
-    'email': ['bjhaveri@amazon.com'],
-    'email_on_failure': True,
-    'email_on_retry': True,
     'retries': 0,
     'retry_delay': timedelta(minutes=2),
     'provide_context': True
