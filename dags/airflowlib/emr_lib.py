@@ -17,6 +17,7 @@ def create_cluster(cluster_name='Airflow-' + str(datetime.now()), release_label=
                     'InstanceRole': 'MASTER',
                     'InstanceType': master_instance_type,
                     'InstanceCount': 1,
+                    'EmrManagedMasterSecurityGroup': 'AirflowEMRMasterSG'
                 },
                 {
                     'Name': "Slave nodes",
@@ -24,6 +25,7 @@ def create_cluster(cluster_name='Airflow-' + str(datetime.now()), release_label=
                     'InstanceRole': 'CORE',
                     'InstanceType': core_node_instance_type,
                     'InstanceCount': num_core_nodes,
+                    'EmrManagedSlaveSecurityGroup': 'AirflowEMRSlaveSG'
                 }
             ],
             'KeepJobFlowAliveWhenNoSteps': True,

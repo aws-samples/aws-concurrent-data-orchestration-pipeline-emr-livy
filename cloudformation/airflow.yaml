@@ -59,7 +59,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       KeyName: !Ref 'KeyName'
-      SecurityGroups: [!Ref 'EC2SecurityGroup']
+      SecurityGroups: [!Ref 'AirflowEC2SecurityGroup']
       InstanceType: 'm4.xlarge'
       IamInstanceProfile:
         Ref: EC2InstanceProfile
@@ -89,7 +89,7 @@ Resources:
          sudo yum install -y git
          # Clone the git repository
          # git clone https://github.com/aws-samples/aws-concurrent-data-orchestration-pipeline-emr-livy.git
-         git clone https://github.com/binaljhaveri/aws-concurrent-data-orchestration-pipeline-emr-livy
+         git clone https://github.com/binaljhaveri/aws-concurrent-data-orchestration-pipeline-emr-livy.git
          sudo pip install boto3
          # Install airflow using pip
          echo "Install Apache Airflow"
@@ -132,7 +132,7 @@ Resources:
               gcc: []
     DependsOn:
       - DBInstance
-      - EC2SecurityGroup
+      - AirflowEC2SecurityGroup
   DBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -144,9 +144,10 @@ Resources:
       AllocatedStorage: 5
       DBSecurityGroups:
         - Ref: DBSecurityGroup
-  EC2SecurityGroup:
+  AirflowEC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: AirflowEC2SG
       GroupDescription: Enable HTTP access via port 80 + SSH access
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -161,13 +162,33 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
+  AirflowEMRMasterEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: AirflowEMRMasterSG
+      GroupDescription: Airflow EMR Master SG
+    DependsOn:
+      - AirflowEC2SecurityGroup
+  AirflowEMRMasterInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: '8998'
+      ToPort: '8998'
+      SourceSecurityGroupName: !Ref 'AirflowEC2SecurityGroup'
+      GroupName: !Ref 'AirflowEMRMasterEC2SecurityGroup'
+  AirflowEMRSlaveEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: AirflowEMRSlaveSG
+      GroupDescription: Airflow EMR Slave SG
   DBSecurityGroup:
     Type: AWS::RDS::DBSecurityGroup
     Properties:
       GroupDescription: Frontend Access
       DBSecurityGroupIngress:
         EC2SecurityGroupName:
-          Ref: EC2SecurityGroup
+          Ref: AirflowEC2SecurityGroup
   EC2Role:
     Type: AWS::IAM::Role
     Properties:
@@ -194,6 +215,7 @@ Resources:
           Ref: EC2Role
   S3Bucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       AccessControl: BucketOwnerFullControl
       BucketName: !Ref 'S3BucketName'
