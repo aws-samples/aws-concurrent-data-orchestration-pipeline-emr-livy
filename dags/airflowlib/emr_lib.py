@@ -1,18 +1,23 @@
-import boto3, json, pprint, requests, textwrap, time, logging
+import boto3, json, pprint, requests, textwrap, time, logging, requests
 from datetime import datetime
 
-def client(region_name='us-west-2'):
-    global emr
-    emr = boto3.client('emr', region_name=region_name)
+def get_region():
+    r = requests.get("http://169.254.169.254/latest/dynamic/instance-identity/document")
+    response_json = r.json()
+    return response_json.get('region')
 
-def get_security_group_id(group_name):
-    ec2 = boto3.client('ec2', region_name='us-west-2')
+def client(region_name):
+    global emr
+    emr = boto3.client('emr', region_name=region)
+
+def get_security_group_id(group_name, region_name):
+    ec2 = boto3.client('ec2', region_name=region_name)
     response = ec2.describe_security_groups(GroupNames=[group_name])
     return response['SecurityGroups'][0]['GroupId']
 
-def create_cluster(cluster_name='Airflow-' + str(datetime.now()), release_label='emr-5.9.0',master_instance_type='m3.xlarge', num_core_nodes=2, core_node_instance_type='m3.2xlarge'):
-    emr_master_security_group_id = get_security_group_id('AirflowEMRMasterSG')
-    emr_slave_security_group_id = get_security_group_id('AirflowEMRSlaveSG')
+def create_cluster(region_name, cluster_name='Airflow-' + str(datetime.now()), release_label='emr-5.9.0',master_instance_type='m3.xlarge', num_core_nodes=2, core_node_instance_type='m3.2xlarge'):
+    emr_master_security_group_id = get_security_group_id('AirflowEMRMasterSG', region_name=region_name)
+    emr_slave_security_group_id = get_security_group_id('AirflowEMRSlaveSG', region_name=region_name)
     cluster_response = emr.run_job_flow(
         Name=cluster_name,
         ReleaseLabel=release_label,

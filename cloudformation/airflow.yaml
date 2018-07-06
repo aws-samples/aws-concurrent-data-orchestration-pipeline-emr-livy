@@ -134,6 +134,7 @@ Resources:
       - AirflowEC2SecurityGroup
   DBInstance:
     Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
     Properties:
       DBName: airflowdb
       Engine: postgres
@@ -221,4 +222,4 @@ Resources:
 Outputs:
   AirflowEC2PublicDNSName:
     Description: Public DNS Name of the Airflow EC2 instance
-    Value: !GetAtt EC2Instance.PublicDnsName
+    Value: !Join ["", ["http://", !GetAtt EC2Instance.PublicDnsName, ":8080"]]

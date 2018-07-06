@@ -17,11 +17,12 @@ default_args = {
 # Initialize the DAG
 # Concurrency --> Number of tasks allowed to run concurrently
 dag = DAG('transform_movielens', concurrency=3, schedule_interval=None, default_args=default_args)
-emr.client(region_name='us-west-2')
+region = emr.get_region()
+emr.client(region_name=region)
 
 # Creates an EMR cluster
 def create_emr(**kwargs):
-    cluster_id = emr.create_cluster(cluster_name='movielens_cluster', num_core_nodes=2)
+    cluster_id = emr.create_cluster(region_name=region, cluster_name='movielens_cluster', num_core_nodes=2)
     return cluster_id
 
 # Waits for the EMR cluster to be ready to accept jobs
