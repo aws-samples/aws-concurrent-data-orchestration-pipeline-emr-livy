@@ -8,7 +8,7 @@ def get_region():
 
 def client(region_name):
     global emr
-    emr = boto3.client('emr', region_name=region)
+    emr = boto3.client('emr', region_name=region_name)
 
 def get_security_group_id(group_name, region_name):
     ec2 = boto3.client('ec2', region_name=region_name)
