@@ -213,6 +213,48 @@ Resources:
       Roles:
         -
           Ref: EC2Role
+  EmrRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: EmrRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "elasticmapreduce.amazonaws.com"
+                - "s3.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonElasticMapReduceFullAccess
+  EmrEc2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: EmrEc2Role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+  EmrEc2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: EmrEc2InstanceProfile
+      Roles:
+        -
+          Ref: EmrEc2Role
   S3Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
