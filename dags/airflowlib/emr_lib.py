@@ -15,7 +15,7 @@ def get_security_group_id(group_name, region_name):
     response = ec2.describe_security_groups(GroupNames=[group_name])
     return response['SecurityGroups'][0]['GroupId']
 
-def create_cluster(region_name, cluster_name='Airflow-' + str(datetime.now()), release_label='emr-5.9.0',master_instance_type='m4.xlarge', num_core_nodes=2, core_node_instance_type='m4.2xlarge'):
+def create_cluster(region_name, cluster_name='Airflow-' + str(datetime.now()), release_label='emr-5.9.0',master_instance_type='m3.xlarge', num_core_nodes=2, core_node_instance_type='m3.2xlarge'):
     emr_master_security_group_id = get_security_group_id('AirflowEMRMasterSG', region_name=region_name)
     emr_slave_security_group_id = get_security_group_id('AirflowEMRSlaveSG', region_name=region_name)
     cluster_response = emr.run_job_flow(
