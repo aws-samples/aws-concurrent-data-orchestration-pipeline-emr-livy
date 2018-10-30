@@ -92,7 +92,7 @@ Resources:
          sudo pip install boto3
          # Install airflow using pip
          echo "Install Apache Airflow"
-         sudo pip install apache-airflow
+         sudo SLUGIFY_USES_TEXT_UNIDECODE=yes pip install -U apache-airflow
          # Encrypt connection passwords in metadata db
          sudo pip install apache-airflow[crypto]
          # Postgres operators and hook, support as an Airflow backend
